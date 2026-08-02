@@ -6,6 +6,8 @@ from pathlib import Path
 
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.lovelace import LOVELACE_DATA
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import Event, HomeAssistant, callback
@@ -24,6 +26,32 @@ PLATFORMS = [Platform.SENSOR]
 CARD_URL = "/fg2431_body_metrics/fg2431-body-card.js"
 CARD_PATH = Path(__file__).parent / "www" / "fg2431-body-card.js"
 CARD_REGISTERED = f"{DOMAIN}_card_registered"
+CARD_RESOURCE_URL = f"{CARD_URL}?v=1.1.6"
+
+
+async def _async_register_lovelace_resource(hass: HomeAssistant) -> None:
+    """Register the card as a storage-mode Lovelace resource."""
+    lovelace_data = hass.data.get(LOVELACE_DATA)
+    if lovelace_data is None:
+        return
+
+    resources = lovelace_data.resources
+    if not isinstance(resources, ResourceStorageCollection):
+        return
+
+    await resources.async_get_info()
+    for resource in resources.async_items():
+        if resource["url"].startswith(CARD_URL):
+            if resource["url"] != CARD_RESOURCE_URL:
+                await resources.async_update_item(
+                    resource["id"],
+                    {"res_type": "module", "url": CARD_RESOURCE_URL},
+                )
+            return
+
+    await resources.async_create_item(
+        {"res_type": "module", "url": CARD_RESOURCE_URL}
+    )
 
 
 async def _async_register_card(hass: HomeAssistant) -> None:
@@ -33,7 +61,8 @@ async def _async_register_card(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL, str(CARD_PATH), False)]
     )
-    add_extra_js_url(hass, f"{CARD_URL}?v=1.1.5")
+    add_extra_js_url(hass, CARD_RESOURCE_URL)
+    await _async_register_lovelace_resource(hass)
     hass.data[CARD_REGISTERED] = True
 
 
