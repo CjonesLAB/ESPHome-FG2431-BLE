@@ -57,9 +57,9 @@ SENSOR_DESCRIPTIONS = (
         translation_key="heart_rate",
         source_key=CONF_HEART_RATE_ENTITY,
         native_unit_of_measurement="bpm",
-        device_class=SensorDeviceClass.HEART_RATE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
+        icon="mdi:heart-pulse",
     ),
     FG2431SensorDescription(
         key="impedance",
