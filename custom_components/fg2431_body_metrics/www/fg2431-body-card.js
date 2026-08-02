@@ -190,16 +190,19 @@ class FG2431BodyCardEditor extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this._config = {};
     this._hass = undefined;
+    this._rendered = false;
   }
 
   setConfig(config) {
     this._config = { ...config };
-    this._render();
+    if (!this._rendered) this._render();
+    else this._syncValues();
   }
 
   set hass(hass) {
     this._hass = hass;
-    this._render();
+    if (!this._rendered) this._render();
+    else this._syncHass();
   }
 
   _changed(key, value) {
@@ -217,7 +220,7 @@ class FG2431BodyCardEditor extends HTMLElement {
   }
 
   _render() {
-    if (!this.shadowRoot || !this._hass) return;
+    if (!this.shadowRoot || !this._hass || this._rendered) return;
     const de = (this._hass.locale?.language || "de").toLowerCase().startsWith("de");
     this.shadowRoot.innerHTML = `
       <style>
@@ -241,6 +244,7 @@ class FG2431BodyCardEditor extends HTMLElement {
     container.style.gap = "14px";
     FIELD_DEFINITIONS.forEach(([key, labelDe, labelEn]) => {
       const picker = document.createElement("ha-entity-picker");
+      picker.dataset.configKey = key;
       picker.hass = this._hass;
       picker.value = this._config[key] || "";
       picker.label = de ? labelDe : labelEn;
@@ -248,6 +252,24 @@ class FG2431BodyCardEditor extends HTMLElement {
       picker.allowCustomEntity = true;
       picker.addEventListener("value-changed", (event) => this._changed(key, event.detail.value));
       container.appendChild(picker);
+    });
+    this._rendered = true;
+  }
+
+  _syncHass() {
+    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach((picker) => {
+      picker.hass = this._hass;
+    });
+  }
+
+  _syncValues() {
+    const title = this.shadowRoot.getElementById("title");
+    const configuredTitle = this._config.title || "";
+    if (title && title.value !== configuredTitle) title.value = configuredTitle;
+
+    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach((picker) => {
+      const configuredValue = this._config[picker.dataset.configKey] || "";
+      if (picker.value !== configuredValue) picker.value = configuredValue;
     });
   }
 }
