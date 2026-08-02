@@ -26,7 +26,7 @@ PLATFORMS = [Platform.SENSOR]
 CARD_URL = "/fg2431_body_metrics/fg2431-body-card.js"
 CARD_PATH = Path(__file__).parent / "www" / "fg2431-body-card.js"
 CARD_REGISTERED = f"{DOMAIN}_card_registered"
-CARD_RESOURCE_URL = f"{CARD_URL}?v=1.2.1"
+CARD_RESOURCE_URL = f"{CARD_URL}?v=1.3.0"
 
 
 async def _async_register_lovelace_resource(hass: HomeAssistant) -> None:
