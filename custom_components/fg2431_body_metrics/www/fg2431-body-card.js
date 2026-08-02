@@ -1,5 +1,6 @@
-const CARD_TYPE = "fg2431-body-card";
-const EDITOR_TYPE = "fg2431-body-card-editor";
+const CARD_TYPE = "fg2431-body-metrics-card";
+const LEGACY_CARD_TYPE = "fg2431-body-card";
+const EDITOR_TYPE = "fg2431-body-metrics-card-editor";
 
 const FIELD_DEFINITIONS = [
   ["weight_entity", "Gewicht", "Weight"],
@@ -252,6 +253,9 @@ class FG2431BodyCardEditor extends HTMLElement {
 }
 
 if (!customElements.get(CARD_TYPE)) customElements.define(CARD_TYPE, FG2431BodyCard);
+if (!customElements.get(LEGACY_CARD_TYPE)) {
+  customElements.define(LEGACY_CARD_TYPE, class extends FG2431BodyCard {});
+}
 if (!customElements.get(EDITOR_TYPE)) customElements.define(EDITOR_TYPE, FG2431BodyCardEditor);
 
 window.customCards = window.customCards || [];
@@ -260,6 +264,6 @@ if (!window.customCards.some((card) => card.type === CARD_TYPE)) {
     type: CARD_TYPE,
     name: "FG2431 Körperanalyse",
     description: "Gewicht, BMI, Körperfett, Körperwasser, Puls und Impedanz eines Profils.",
-    preview: true,
+    preview: false,
   });
 }
