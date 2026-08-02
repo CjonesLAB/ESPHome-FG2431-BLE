@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstrakte smarte Waage">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.55" stop-color="#0b2634"/>
+      <stop offset="1" stop-color="#08767a"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#203346"/>
+      <stop offset="1" stop-color="#071018"/>
+    </linearGradient>
+    <radialGradient id="electrode">
+      <stop offset="0" stop-color="#d9f8f5"/>
+      <stop offset="0.55" stop-color="#7fa5a5"/>
+      <stop offset="1" stop-color="#30494f"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#background)"/>
+  <circle cx="1260" cy="180" r="270" fill="#26d4cc" opacity="0.08"/>
+  <circle cx="240" cy="720" r="360" fill="#1ea5b3" opacity="0.06"/>
+  <path d="M110 600 C420 430 600 700 890 500 S1320 280 1540 390" fill="none" stroke="#42efe4" stroke-width="3" opacity="0.2"/>
+  <g opacity="0.38" fill="none" stroke="#7ef9f0" stroke-width="4">
+    <path d="M1290 256a118 118 0 1 1 70-213"/>
+    <path d="M1302 294a158 158 0 1 1 94-285" opacity="0.45"/>
+    <circle cx="1260" cy="180" r="7" fill="#7ef9f0" stroke="none"/>
+  </g>
+  <g transform="translate(490 130) rotate(-5 330 330)" filter="url(#shadow)">
+    <rect x="0" y="0" width="660" height="660" rx="110" fill="url(#glass)" stroke="#597681" stroke-width="8"/>
+    <path d="M70 100Q330 8 590 100" fill="none" stroke="#fff" stroke-width="10" opacity="0.08"/>
+    <g fill="url(#electrode)" stroke="#b9d9d8" stroke-width="5" opacity="0.92">
+      <ellipse cx="170" cy="190" rx="85" ry="118" transform="rotate(-24 170 190)"/>
+      <ellipse cx="490" cy="190" rx="85" ry="118" transform="rotate(24 490 190)"/>
+      <ellipse cx="170" cy="475" rx="85" ry="118" transform="rotate(24 170 475)"/>
+      <ellipse cx="490" cy="475" rx="85" ry="118" transform="rotate(-24 490 475)"/>
+    </g>
+    <rect x="230" y="74" width="200" height="86" rx="24" fill="#061116" stroke="#2d5960" stroke-width="4"/>
+    <rect x="267" y="104" width="126" height="18" rx="9" fill="#58fff3" opacity="0.35" filter="url(#glow)"/>
+    <rect x="267" y="104" width="126" height="18" rx="9" fill="#9ffff7"/>
+  </g>
+</svg>
