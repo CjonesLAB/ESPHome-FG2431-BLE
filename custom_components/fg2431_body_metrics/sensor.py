@@ -12,7 +12,6 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
-    UnitOfElectricResistance,
     UnitOfMass,
 )
 from homeassistant.core import HomeAssistant, callback
@@ -31,6 +30,8 @@ from .const import (
     DOMAIN,
     SEX_MALE,
 )
+
+UNIT_OHM = "Ω"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -64,7 +65,7 @@ SENSOR_DESCRIPTIONS = (
         key="impedance",
         translation_key="impedance",
         source_key=CONF_IMPEDANCE_ENTITY,
-        native_unit_of_measurement=UnitOfElectricResistance.OHM,
+        native_unit_of_measurement=UNIT_OHM,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
     ),
