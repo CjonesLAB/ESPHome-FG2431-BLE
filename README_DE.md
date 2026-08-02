@@ -8,7 +8,7 @@ Das Repository enthält:
 
 - eine ESPHome External Component für finale BLE-Messungen;
 - eine optionale Home-Assistant-Integration für Körperwerte und Personenprofile;
-- ein fertiges, markenneutrales Dashboard für drei Personen.
+- eine auswählbare Lovelace-Karte mit visuellem Editor für jedes Personenprofil.
 
 Es werden weder Hersteller-Quellcode noch Firmware, Verschlüsselungsschlüssel, Produktbilder, Logos, App-Screenshots oder Inhalte der Hersteller-Website verwendet. Produkt- und Firmennamen werden ausschließlich dort genannt, wo sie zur Beschreibung der Gerätekompatibilität notwendig sind.
 
@@ -129,15 +129,17 @@ Die Impedanzgleichungen basieren auf den von [Sun et al. (2003)](https://ajcn.nu
 
 Bioimpedanzwerte von Personenwaagen sind Schätzwerte und werden unter anderem durch Flüssigkeitsversorgung, Sport, Mahlzeiten und Kontaktqualität beeinflusst. Sie eignen sich zur Beobachtung persönlicher Trends, aber nicht als medizinische Messung, Diagnose oder Behandlungsempfehlung.
 
-## Dashboard für drei Personen
+## Auswählbare Lovelace-Karte
 
-[`dashboard/fg2431_dashboard.yaml`](dashboard/fg2431_dashboard.yaml) enthält ein Home-Assistant-Dashboard vom Typ „Sections“ und verwendet ausschließlich integrierte Karten.
+Ab Version 1.1.0 ist die Karte **FG2431 Körperanalyse** enthalten. Die Integration lädt sie automatisch. Eine Dashboard-Ressource oder RAW-YAML muss nicht manuell eingetragen werden.
 
-1. [`dashboard/fg2431-scale-hero.svg`](dashboard/fg2431-scale-hero.svg) nach `/config/www/fg2431-scale-hero.svg` kopieren.
-2. Ein Dashboard anlegen, dessen Rohkonfigurationseditor öffnen und den Inhalt der YAML-Datei einfügen.
-3. Falls Home Assistant andere Entity-IDs erzeugt hat, die Beispiele `sensor.person_1_*`, `sensor.person_2_*` und `sensor.person_3_*` entsprechend ersetzen.
+1. Die Integration in HACS aktualisieren beziehungsweise neu herunterladen und Home Assistant neu starten.
+2. Ein Dashboard öffnen und **Dashboard bearbeiten → Karte hinzufügen** wählen.
+3. Nach `FG2431` suchen und die Karte auswählen.
+4. Den Namen der Person eintragen und im visuellen Editor die sechs Sensoren für Gewicht, Puls, Impedanz, BMI, Körperfett und Körperwasser auswählen.
+5. Für jede weitere Person eine weitere Instanz der Karte hinzufügen.
 
-Die Illustration ist ein eigenständig erstelltes, markenfreies Projektmotiv. Sie bildet weder ein Herstellerfoto noch ein Logo oder eine App-Oberfläche nach.
+Ein Klick auf einen Messwert öffnet den normalen Home-Assistant-Detaildialog des Sensors. Die Karte übernimmt das aktive Home-Assistant-Theme und funktioniert sowohl in Sections- als auch in Masonry-Dashboards.
 
 ## Rechtlicher und markenrechtlicher Hinweis
 
