@@ -21,7 +21,7 @@ from .const import (
 )
 
 PLATFORMS = [Platform.SENSOR]
-CARD_URL = "/fg2431_body_metrics/fg2431-body-card-1.1.3.js"
+CARD_URL = "/fg2431_body_metrics/fg2431-body-card.js"
 CARD_PATH = Path(__file__).parent / "www" / "fg2431-body-card.js"
 
 
@@ -30,7 +30,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL, str(CARD_PATH), False)]
     )
-    add_extra_js_url(hass, CARD_URL)
+    add_extra_js_url(hass, f"{CARD_URL}?v=1.1.4")
     return True
 
 
