@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Körperprofil anlegen",
+        "description": "Wähle die drei Sensoren für finale Messwerte aus der ESPHome-Komponente aus.",
+        "data": {
+          "profile_name": "Profilname",
+          "sex": "Berechnungsprofil",
+          "height": "Körpergröße",
+          "weight_entity": "Gewichtssensor",
+          "heart_rate_entity": "Pulssensor",
+          "impedance_entity": "Impedanzsensor"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Dieser Gewichtssensor ist bereits einem Profil zugeordnet."
+    }
+  },
+  "selector": {
+    "sex": {
+      "options": {
+        "male": "Männliche Gleichung",
+        "female": "Weibliche Gleichung"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "weight": { "name": "Gewicht" },
+      "heart_rate": { "name": "Puls" },
+      "impedance": { "name": "Impedanz" },
+      "bmi": { "name": "BMI" },
+      "body_fat": { "name": "Körperfett" },
+      "body_water": { "name": "Körperwasser" }
+    }
+  }
+}
