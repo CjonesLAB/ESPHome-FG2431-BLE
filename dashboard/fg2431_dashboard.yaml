@@ -1,0 +1,167 @@
+title: Körperanalyse
+views:
+  - title: Übersicht
+    path: koerperanalyse
+    icon: mdi:scale-bathroom
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: picture
+            image: /local/fg2431-scale-hero.svg
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 5
+          - type: markdown
+            content: >-
+              ## Körperanalyse
+              Finale Messwerte der FG2431 – lokal verarbeitet in Home Assistant.
+            grid_options:
+              columns: 12
+              rows: 2
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Person 1
+            icon: mdi:account
+          - type: tile
+            entity: sensor.person_1_weight
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: tile
+            entity: sensor.person_1_heart_rate
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: gauge
+            entity: sensor.person_1_body_fat
+            name: Körperfett
+            min: 5
+            max: 45
+            severity:
+              green: 10
+              yellow: 25
+              red: 35
+          - type: gauge
+            entity: sensor.person_1_body_water
+            name: Körperwasser
+            min: 30
+            max: 75
+            severity:
+              red: 30
+              yellow: 45
+              green: 50
+          - type: tile
+            entity: sensor.person_1_bmi
+          - type: tile
+            entity: sensor.person_1_impedance
+          - type: history-graph
+            title: Verlauf
+            hours_to_show: 168
+            entities:
+              - sensor.person_1_weight
+              - sensor.person_1_body_fat
+              - sensor.person_1_body_water
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Person 2
+            icon: mdi:account
+          - type: tile
+            entity: sensor.person_2_weight
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: tile
+            entity: sensor.person_2_heart_rate
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: gauge
+            entity: sensor.person_2_body_fat
+            name: Körperfett
+            min: 5
+            max: 50
+            severity:
+              green: 18
+              yellow: 32
+              red: 42
+          - type: gauge
+            entity: sensor.person_2_body_water
+            name: Körperwasser
+            min: 30
+            max: 75
+            severity:
+              red: 30
+              yellow: 42
+              green: 48
+          - type: tile
+            entity: sensor.person_2_bmi
+          - type: tile
+            entity: sensor.person_2_impedance
+          - type: history-graph
+            title: Verlauf
+            hours_to_show: 168
+            entities:
+              - sensor.person_2_weight
+              - sensor.person_2_body_fat
+              - sensor.person_2_body_water
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Person 3
+            icon: mdi:account
+          - type: tile
+            entity: sensor.person_3_weight
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: tile
+            entity: sensor.person_3_heart_rate
+            vertical: true
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: gauge
+            entity: sensor.person_3_body_fat
+            name: Körperfett
+            min: 5
+            max: 45
+            severity:
+              green: 10
+              yellow: 25
+              red: 35
+          - type: gauge
+            entity: sensor.person_3_body_water
+            name: Körperwasser
+            min: 30
+            max: 75
+            severity:
+              red: 30
+              yellow: 45
+              green: 50
+          - type: tile
+            entity: sensor.person_3_bmi
+          - type: tile
+            entity: sensor.person_3_impedance
+          - type: history-graph
+            title: Verlauf
+            hours_to_show: 168
+            entities:
+              - sensor.person_3_weight
+              - sensor.person_3_body_fat
+              - sensor.person_3_body_water
