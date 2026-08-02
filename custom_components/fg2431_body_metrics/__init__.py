@@ -2,10 +2,14 @@
 
 from collections.abc import Callable
 from datetime import datetime
+from pathlib import Path
 
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 
 from .const import (
@@ -17,6 +21,17 @@ from .const import (
 )
 
 PLATFORMS = [Platform.SENSOR]
+CARD_URL = "/fg2431_body_metrics/fg2431-body-card.js"
+CARD_PATH = Path(__file__).parent / "www" / "fg2431-body-card.js"
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the bundled Lovelace card."""
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(CARD_URL, str(CARD_PATH), True)]
+    )
+    add_extra_js_url(hass, f"{CARD_URL}?v=1.1.0")
+    return True
 
 
 class FG2431ProfileData:
