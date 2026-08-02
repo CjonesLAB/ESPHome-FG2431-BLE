@@ -62,6 +62,39 @@ sensor:
 
 The MAC address is configurable in `ble_client`; the address above is only an example. See [`example.yaml`](example.yaml) for a complete ESPHome node.
 
+### Finding the scale's MAC address
+
+If the MAC address is unknown, temporarily add the following scanner to the ESPHome configuration. Keep `active: true`, disconnect the phone app from the scale and wake the scale by briefly stepping on it.
+
+```yaml
+logger:
+  level: DEBUG
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+  on_ble_advertise:
+    - then:
+        - lambda: |-
+            if (x.get_name().find("JEETIF2431") != std::string::npos) {
+              ESP_LOGI(
+                "fg2431_scan",
+                "FG2431 found: address=%s, name=%s, RSSI=%d",
+                x.address_str().c_str(),
+                x.get_name().c_str(),
+                x.get_rssi()
+              );
+            }
+```
+
+Open the ESPHome device logs and look for a line similar to:
+
+```text
+FG2431 found: address=AA:BB:CC:DD:EE:FF, name=JEETIF2431, RSSI=-55
+```
+
+Copy the displayed address into `ble_client.mac_address`. Then remove the temporary `on_ble_advertise` block again; `esp32_ble_tracker` itself must remain. Nearby BLE addresses may appear in diagnostic logs, so do not publish unfiltered logs without reviewing them first.
+
 ### Person detection and validation
 
 `min_weight` and `max_weight` are inclusive kilograms and must not overlap. An unmatched final weight is logged and not published. Packets are accepted only on FFB3 when they contain the `00 A3` final marker and plausible values. A zero pulse or impedance means that metric was unavailable.
