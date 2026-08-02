@@ -11,16 +11,3 @@
   "requirements": [],
   "version": "1.1.5"
 }
-{
-  "domain": "fg2431_body_metrics",
-  "name": "FG2431 Body Metrics",
-  "codeowners": ["@CjonesLAB"],
-  "config_flow": true,
-  "dependencies": ["frontend"],
-  "documentation": "https://github.com/CjonesLAB/ESPHome-FG2431-BLE#home-assistant-integration",
-  "integration_type": "helper",
-  "iot_class": "calculated",
-  "issue_tracker": "https://github.com/CjonesLAB/ESPHome-FG2431-BLE/issues",
-  "requirements": [],
-  "version": "1.1.4"
-}
