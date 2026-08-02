@@ -8,7 +8,7 @@ The repository contains:
 
 - an ESPHome external component for final BLE measurements;
 - an optional Home Assistant integration for body metrics and personal profiles;
-- a ready-to-use, brand-neutral three-person dashboard.
+- a selectable Lovelace card with a visual editor for each profile.
 
 No manufacturer source code, firmware, encryption keys, photographs, logos, app screenshots or website content are included. Product and company names are used only where necessary to describe device compatibility.
 
@@ -126,15 +126,17 @@ The impedance equations are the adult fat-free-mass and total-body-water equatio
 
 Bioimpedance values from consumer foot scales are estimates affected by hydration, recent exercise, meals and contact quality. They are intended for consistent personal trend tracking and are not medical measurements, diagnoses or treatment advice.
 
-## Three-person dashboard
+## Lovelace card
 
-[`dashboard/fg2431_dashboard.yaml`](dashboard/fg2431_dashboard.yaml) contains a Home Assistant Sections dashboard using only built-in cards.
+Version 1.1.0 includes the selectable **FG2431 Body Analysis** card. The integration loads it automatically, so no dashboard resource or raw YAML has to be added manually.
 
-1. Copy [`dashboard/fg2431-scale-hero.svg`](dashboard/fg2431-scale-hero.svg) to `/config/www/fg2431-scale-hero.svg`.
-2. Create a dashboard, open its raw configuration editor and paste the YAML.
-3. Replace the example `sensor.person_1_*`, `sensor.person_2_*` and `sensor.person_3_*` entity IDs if Home Assistant generated different ones.
+1. Update or re-download the integration in HACS and restart Home Assistant.
+2. Open a dashboard and select **Edit dashboard → Add card**.
+3. Search for `FG2431` and choose the card.
+4. Enter the person's name and select the six weight, pulse, impedance, BMI, body-fat and body-water entities in the visual editor.
+5. Add another copy of the card for every additional person.
 
-The illustration is an original, unbranded project asset. It does not reproduce a manufacturer product image, logo or application interface.
+Clicking a displayed metric opens Home Assistant's normal entity details dialog. The card follows the active Home Assistant theme and works in Sections as well as masonry dashboards.
 
 ## Legal and trademark notice
 
