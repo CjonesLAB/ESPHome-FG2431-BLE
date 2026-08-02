@@ -1,5 +1,7 @@
 # ESPHome FG2431 BLE
 
+[Deutsch](README_DE.md) | **English**
+
 Independent community support for FG2431WB-B / FG2431 BLE body scales advertising as `JEETIF2431`. The implementation has been tested with a Runstar-branded FG2431WB-B, but it is not produced, supported, sponsored or endorsed by the device manufacturer.
 
 The repository contains:
