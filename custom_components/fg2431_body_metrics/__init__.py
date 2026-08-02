@@ -26,7 +26,7 @@ PLATFORMS = [Platform.SENSOR]
 CARD_URL = "/fg2431_body_metrics/fg2431-body-card.js"
 CARD_PATH = Path(__file__).parent / "www" / "fg2431-body-card.js"
 CARD_REGISTERED = f"{DOMAIN}_card_registered"
-CARD_RESOURCE_URL = f"{CARD_URL}?v=1.1.6"
+CARD_RESOURCE_URL = f"{CARD_URL}?v=1.2.0"
 
 
 async def _async_register_lovelace_resource(hass: HomeAssistant) -> None:
@@ -86,10 +86,13 @@ class FG2431ProfileData:
         self._listeners: list[Callable[[], None]] = []
         self._cancel_state_listener: Callable[[], None] | None = None
         self._cancel_pending_update: Callable[[], None] | None = None
+        self._last_weight_kg: float | None = None
+        self.weight_change_kg: float | None = None
 
     @callback
     def async_start(self) -> None:
         """Start listening for ESPHome sensor updates."""
+        self._last_weight_kg = self._current_weight()
         self._cancel_state_listener = async_track_state_change_event(
             self.hass, self.source_entity_ids, self._source_state_changed
         )
@@ -117,8 +120,25 @@ class FG2431ProfileData:
     @callback
     def _notify_listeners(self, now: datetime) -> None:
         self._cancel_pending_update = None
+        current_weight = self._current_weight()
+        if current_weight is not None:
+            if self._last_weight_kg is not None:
+                self.weight_change_kg = round(
+                    current_weight - self._last_weight_kg, 3
+                )
+            self._last_weight_kg = current_weight
         for listener in self._listeners:
             listener()
+
+    def _current_weight(self) -> float | None:
+        """Return the current profile weight source value."""
+        state = self.hass.states.get(self.entry.data[CONF_WEIGHT_ENTITY])
+        if state is None or state.state in ("unknown", "unavailable"):
+            return None
+        try:
+            return float(state.state)
+        except ValueError:
+            return None
 
     @callback
     def async_stop(self) -> None:
