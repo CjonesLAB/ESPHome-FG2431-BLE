@@ -9,5 +9,5 @@
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/CjonesLAB/ESPHome-FG2431-BLE/issues",
   "requirements": [],
-  "version": "1.1.1"
+  "version": "1.1.2"
 }
