@@ -29,6 +29,7 @@
   "entity": {
     "sensor": {
       "weight": { "name": "Weight" },
+      "weight_change": { "name": "Weight change" },
       "heart_rate": { "name": "Heart rate" },
       "impedance": { "name": "Impedance" },
       "bmi": { "name": "BMI" },
