@@ -4,8 +4,8 @@ const EDITOR_TYPE = "fg2431-body-metrics-card-editor";
 
 const FIELD_DEFINITIONS = [
   ["weight_entity", "Gewicht", "Weight"],
+  ["weight_change_entity", "Gewichtsänderung", "Weight change"],
   ["heart_rate_entity", "Puls", "Heart rate"],
-  ["impedance_entity", "Impedanz", "Impedance"],
   ["bmi_entity", "BMI", "BMI"],
   ["body_fat_entity", "Körperfett", "Body fat"],
   ["body_water_entity", "Körperwasser", "Body water"],
@@ -90,6 +90,20 @@ class FG2431BodyCard extends HTMLElement {
     );
   }
 
+  _weightTrend() {
+    const entityId = this._config.weight_change_entity;
+    const stateObj = this._state(entityId);
+    if (!stateObj || ["unknown", "unavailable"].includes(stateObj.state)) return "";
+
+    const change = Number.parseFloat(stateObj.state);
+    if (!Number.isFinite(change)) return "";
+    const direction = change < -0.005 ? "down" : change > 0.005 ? "up" : "same";
+    const icon = direction === "down" ? "mdi:arrow-down-bold" : direction === "up" ? "mdi:arrow-up-bold" : "mdi:arrow-right-bold";
+    let value = this._formatted(entityId);
+    if (change > 0 && !value.startsWith("+")) value = `+${value}`;
+    return `<span class="trend ${direction}"><ha-icon icon="${icon}"></ha-icon>${escapeHtml(value)}</span>`;
+  }
+
   _metric(key, label, icon, accent = "") {
     const entityId = this._config[key];
     const state = this._formatted(entityId);
@@ -112,7 +126,6 @@ class FG2431BodyCard extends HTMLElement {
           empty: "Wähle die Sensoren im Karteneditor aus.",
           weight: "Gewicht",
           pulse: "Puls",
-          impedance: "Impedanz",
           fat: "Körperfett",
           water: "Körperwasser",
         }
@@ -120,7 +133,6 @@ class FG2431BodyCard extends HTMLElement {
           empty: "Select the sensors in the visual card editor.",
           weight: "Weight",
           pulse: "Heart rate",
-          impedance: "Impedance",
           fat: "Body fat",
           water: "Body water",
         };
@@ -145,6 +157,12 @@ class FG2431BodyCard extends HTMLElement {
         .weight.missing { cursor: default; }
         .weight-label { display: block; color: var(--secondary-text-color); font-size: 13px; }
         .weight-value { display: block; margin-top: 2px; font-size: 44px; line-height: 1.05; font-weight: 720; letter-spacing: -1.5px; }
+        .weight-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; }
+        .trend { display: inline-flex; align-items: center; gap: 2px; font-size: 16px; font-weight: 700; white-space: nowrap; }
+        .trend ha-icon { --mdc-icon-size: 20px; }
+        .trend.down { color: #35b96f; }
+        .trend.up { color: #e55353; }
+        .trend.same { color: var(--secondary-text-color); }
         .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 0 14px 16px; }
         .metric {
           display: flex; align-items: center; gap: 11px; min-width: 0;
@@ -167,14 +185,16 @@ class FG2431BodyCard extends HTMLElement {
         ${configured ? `
           <button class="weight${weightEntity ? "" : " missing"}" data-entity="${escapeHtml(weightEntity)}">
             <span class="weight-label">${labels.weight}</span>
-            <span class="weight-value">${escapeHtml(this._formatted(weightEntity))}</span>
+            <span class="weight-line">
+              <span class="weight-value">${escapeHtml(this._formatted(weightEntity))}</span>
+              ${this._weightTrend()}
+            </span>
           </button>
           <div class="metrics">
             ${this._metric("body_fat_entity", labels.fat, "mdi:percent-circle-outline", "fat")}
             ${this._metric("body_water_entity", labels.water, "mdi:water-percent", "water")}
             ${this._metric("bmi_entity", "BMI", "mdi:human-male-height-variant")}
             ${this._metric("heart_rate_entity", labels.pulse, "mdi:heart-pulse")}
-            ${this._metric("impedance_entity", labels.impedance, "mdi:omega")}
           </div>` : `<div class="empty">${labels.empty}</div>`}
       </ha-card>`;
 
