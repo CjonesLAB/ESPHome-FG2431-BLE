@@ -133,10 +133,12 @@ Version 1.1.0 includes the selectable **FG2431 Body Analysis** card. The integra
 1. Update or re-download the integration in HACS and restart Home Assistant.
 2. Open a dashboard and select **Edit dashboard → Add card**.
 3. Search for `FG2431` and choose the card.
-4. Enter the person's name and select the six weight, pulse, impedance, BMI, body-fat and body-water entities in the visual editor.
+4. Enter the person's name and select weight, weight change, pulse, BMI, body fat and body water in the visual editor.
 5. Add another copy of the card for every additional person.
 
 Clicking a displayed metric opens Home Assistant's normal entity details dialog. The card follows the active Home Assistant theme and works in Sections as well as masonry dashboards.
+
+Impedance remains available as a sensor and calculation input but is not displayed on the card. The weight row shows the change from the previous final measurement: green for loss, red for gain and neutral when unchanged.
 
 ## Legal and trademark notice
 
