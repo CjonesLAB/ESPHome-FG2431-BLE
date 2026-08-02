@@ -140,6 +140,12 @@ Clicking a displayed metric opens Home Assistant's normal entity details dialog.
 
 Impedance remains available as a sensor and calculation input but is not displayed on the card. The weight row shows the change from the previous final measurement: green for loss, red for gain and neutral when unchanged.
 
+### History card
+
+The additional selectable **FG2431 History** card displays daily long-term statistics for weight, body fat, body water, BMI and heart rate. Select the five sensors of one profile in its visual editor. The period can be switched between 7, 28 and 90 days directly on the card; 28 days is the default. The weight section also shows change, average, minimum and maximum.
+
+Home Assistant starts building long-term statistics after installation and subsequent measurements. Older values cannot be reconstructed retroactively.
+
 ## Legal and trademark notice
 
 This is an unofficial, independently developed interoperability project. It is not affiliated with, authorized by, maintained by or endorsed by the manufacturer or any related app provider. All product names and trademarks belong to their respective owners and are referenced solely to identify compatible hardware.
