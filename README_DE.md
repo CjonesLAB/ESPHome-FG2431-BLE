@@ -109,7 +109,13 @@ Die optionale Integration `FG2431 Body Metrics` verwendet die finalen Gewichts- 
 
 - BMI;
 - Körperfettanteil;
-- Körperwasseranteil.
+- Körperwasseranteil;
+- fettfreie Körpermasse;
+- Skelettmuskelanteil und Skelettmuskelmasse;
+- Muskelanteil und Muskelmasse;
+- Knochenmasse;
+- Proteinanteil;
+- Grundumsatz (BMR).
 
 Zusätzlich werden Gewicht, Puls und Impedanz in einem übersichtlichen Home-Assistant-Gerät pro Person zusammengeführt. Kurz aufeinanderfolgende Sensoränderungen werden gruppiert, damit die Werte eines finalen BLE-Pakets gemeinsam erscheinen.
 
@@ -119,30 +125,34 @@ Zusätzlich werden Gewicht, Puls und Impedanz in einem übersichtlichen Home-Ass
 2. `FG2431 BLE for ESPHome and Home Assistant` installieren.
 3. Home Assistant neu starten.
 4. **Einstellungen → Geräte & Dienste → Integration hinzufügen → FG2431 Body Metrics** öffnen.
-5. Für jede Person ein Profil anlegen und die zugehörigen ESPHome-Sensoren für Gewicht, Puls und Impedanz sowie Körpergröße und Berechnungsprofil auswählen.
+5. Für jede Person ein Profil anlegen und die zugehörigen ESPHome-Sensoren für Gewicht, Puls und Impedanz sowie Körpergröße, reales Alter und Berechnungsprofil auswählen.
+
+Nach dem Update eines bestehenden Profils auf Version 1.4.0 beim Integrationseintrag **Konfigurieren** wählen, das reale Alter der Person eintragen und speichern. Vorhandene Entitäts-IDs und Verlaufsdaten bleiben erhalten. Das Alter wird ausschließlich als Berechnungswert verwendet und nicht als Entität veröffentlicht.
 
 Für eine manuelle Installation wird der Ordner `custom_components/fg2431_body_metrics` nach `/config/custom_components/` kopiert. Anschließend muss Home Assistant neu gestartet werden.
 
 ### Berechnungen und Einschränkungen
 
-Die Impedanzgleichungen basieren auf den von [Sun et al. (2003)](https://ajcn.nutrition.org/article/S0002-9165%2823%2905611-3/fulltext) veröffentlichten Gleichungen für fettfreie Masse und Gesamtkörperwasser bei Erwachsenen. Sie werden ebenfalls vom Open-Source-Projekt [openScale](https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/libs/StandardImpedanceLib.kt) eingesetzt. Dieses Projekt enthält eine unabhängige Implementierung.
+Die Impedanzgleichungen verwenden die von [Sun et al. (2003)](https://ajcn.nutrition.org/article/S0002-9165%2823%2905611-3/fulltext) veröffentlichten Gleichungen für fettfreie Masse und Gesamtkörperwasser bei Erwachsenen. Die Skelettmuskelmasse basiert auf [Janssen et al. (2000)](https://pubmed.ncbi.nlm.nih.gov/10926627/), der Grundumsatz auf [Mifflin–St Jeor (1990)](https://pubmed.ncbi.nlm.nih.gov/2305711/). Die unabhängige Implementierung folgt damit dem transparenten Ansatz des Open-Source-Projekts [openScale](https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/libs/StandardImpedanceLib.kt).
+
+Viszeralfett, Unterhautfett, biologisches Alter und Herz-Index werden bewusst nicht berechnet, weil sie sich aus den verfügbaren Paketwerten nicht mit einer veröffentlichten, reproduzierbaren Methode zuverlässig ableiten lassen.
 
 Bioimpedanzwerte von Personenwaagen sind Schätzwerte und werden unter anderem durch Flüssigkeitsversorgung, Sport, Mahlzeiten und Kontaktqualität beeinflusst. Sie eignen sich zur Beobachtung persönlicher Trends, aber nicht als medizinische Messung, Diagnose oder Behandlungsempfehlung.
 
 ## Auswählbare Lovelace-Karte
 
-Ab Version 1.1.0 ist die Karte **FG2431 Körperanalyse** enthalten. Die Integration lädt sie automatisch. Eine Dashboard-Ressource oder RAW-YAML muss nicht manuell eingetragen werden.
+Die Karte **FG2431 Körperanalyse** ist in der Integration enthalten und wird automatisch geladen. Eine Dashboard-Ressource oder RAW-YAML muss nicht manuell eingetragen werden.
 
 1. Die Integration in HACS aktualisieren beziehungsweise neu herunterladen und Home Assistant neu starten.
 2. Ein Dashboard öffnen und **Dashboard bearbeiten → Karte hinzufügen** wählen.
 3. Nach `FG2431` suchen und die Karte auswählen.
-4. Den Namen der Person eintragen und im visuellen Editor Gewicht, Gewichtsänderung, Puls, BMI, Körperfett und Körperwasser auswählen.
+4. Den Namen der Person eintragen und im visuellen Editor die gewünschten Profilsensoren auswählen. Die neuen Körperwerte können einzeln angezeigt oder leer gelassen werden.
 
 Die Impedanz bleibt als Sensor und Berechnungsgrundlage erhalten, wird auf der Karte aber nicht angezeigt. Neben dem Gewicht zeigt die Karte die Änderung zur vorherigen finalen Messung: Abnahme grün, Zunahme rot und unverändert neutral.
 
 ### Verlaufskarte
 
-Die zusätzlich auswählbare Karte **FG2431 Verlauf** zeigt tägliche Langzeitstatistiken für Gewicht, Körperfett, Körperwasser, BMI und Puls. Im visuellen Editor werden die fünf Sensoren eines Profils ausgewählt. Der Zeitraum lässt sich direkt auf der Karte zwischen 7, 28 und 90 Tagen umschalten; standardmäßig werden 28 Tage angezeigt. Für das Gewicht erscheinen außerdem Veränderung, Durchschnitt, Minimum und Maximum.
+Die zusätzlich auswählbare Karte **FG2431 Verlauf** zeigt tägliche Langzeitstatistiken für das Gewicht und alle ausgewählten Körperwerte. Neben Körperfett, Körperwasser, BMI und Puls lassen sich ab Version 1.4.0 auch fettfreie Masse, Skelettmuskelanteil, Muskelmasse, Proteinanteil und Grundumsatz darstellen. Der Zeitraum lässt sich direkt auf der Karte zwischen 7, 28 und 90 Tagen umschalten; standardmäßig werden 28 Tage angezeigt. Für das Gewicht erscheinen außerdem Veränderung, Durchschnitt, Minimum und Maximum.
 
 Home Assistant baut Langzeitstatistiken erst ab der Installation und den folgenden Messungen auf. Frühere Werte können nicht rückwirkend ergänzt werden.
 5. Für jede weitere Person eine weitere Instanz der Karte hinzufügen.

@@ -21,6 +21,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import FG2431ProfileData
 from .calculations import BodyMetrics, calculate_body_metrics
 from .const import (
+    CONF_AGE,
     CONF_HEART_RATE_ENTITY,
     CONF_HEIGHT,
     CONF_IMPEDANCE_ENTITY,
@@ -39,7 +40,7 @@ class FG2431SensorDescription(SensorEntityDescription):
     """Describe an FG2431 profile sensor."""
 
     source_key: str | None = None
-    metric_getter: Callable[[BodyMetrics], float] | None = None
+    metric_getter: Callable[[BodyMetrics], float | None] | None = None
     profile_getter: Callable[[FG2431ProfileData], float | None] | None = None
 
 
@@ -105,6 +106,82 @@ SENSOR_DESCRIPTIONS = (
         suggested_display_precision=1,
         icon="mdi:water-percent",
     ),
+    FG2431SensorDescription(
+        key="fat_free_mass",
+        translation_key="fat_free_mass",
+        metric_getter=lambda metrics: metrics.fat_free_mass_kg,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        device_class=SensorDeviceClass.WEIGHT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:human",
+    ),
+    FG2431SensorDescription(
+        key="skeletal_muscle_mass",
+        translation_key="skeletal_muscle_mass",
+        metric_getter=lambda metrics: metrics.skeletal_muscle_mass_kg,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        device_class=SensorDeviceClass.WEIGHT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:arm-flex",
+    ),
+    FG2431SensorDescription(
+        key="skeletal_muscle",
+        translation_key="skeletal_muscle",
+        metric_getter=lambda metrics: metrics.skeletal_muscle_percentage,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:arm-flex-outline",
+    ),
+    FG2431SensorDescription(
+        key="muscle_mass",
+        translation_key="muscle_mass",
+        metric_getter=lambda metrics: metrics.muscle_mass_kg,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        device_class=SensorDeviceClass.WEIGHT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:weight-lifter",
+    ),
+    FG2431SensorDescription(
+        key="muscle_percentage",
+        translation_key="muscle_percentage",
+        metric_getter=lambda metrics: metrics.muscle_percentage,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:weight-lifter",
+    ),
+    FG2431SensorDescription(
+        key="bone_mass",
+        translation_key="bone_mass",
+        metric_getter=lambda metrics: metrics.bone_mass_kg,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        device_class=SensorDeviceClass.WEIGHT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:bone",
+    ),
+    FG2431SensorDescription(
+        key="protein",
+        translation_key="protein",
+        metric_getter=lambda metrics: metrics.protein_percentage,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        icon="mdi:food-drumstick-outline",
+    ),
+    FG2431SensorDescription(
+        key="bmr",
+        translation_key="bmr",
+        metric_getter=lambda metrics: metrics.basal_metabolic_rate_kcal,
+        native_unit_of_measurement="kcal/day",
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        icon="mdi:fire",
+    ),
 )
 
 
@@ -140,7 +217,6 @@ class FG2431ProfileSensor(SensorEntity):
             manufacturer="CjonesLAB",
             model="FG2431 body profile",
         )
-
     async def async_added_to_hass(self) -> None:
         """Subscribe to final measurement updates."""
         await super().async_added_to_hass()
@@ -157,7 +233,12 @@ class FG2431ProfileSensor(SensorEntity):
             return self._source_value(self.entity_description.source_key) is not None
         if self.entity_description.profile_getter is not None:
             return self.entity_description.profile_getter(self.profile) is not None
-        return self._calculated_metrics() is not None
+        metrics = self._calculated_metrics()
+        return (
+            metrics is not None
+            and self.entity_description.metric_getter is not None
+            and self.entity_description.metric_getter(metrics) is not None
+        )
 
     @property
     def native_value(self) -> float | None:
@@ -183,6 +264,9 @@ class FG2431ProfileSensor(SensorEntity):
     def _calculated_metrics(self) -> BodyMetrics | None:
         weight = self._source_value(CONF_WEIGHT_ENTITY)
         impedance = self._source_value(CONF_IMPEDANCE_ENTITY)
+        age = self.profile.entry.options.get(
+            CONF_AGE, self.profile.entry.data.get(CONF_AGE)
+        )
         if weight is None or impedance is None:
             return None
         return calculate_body_metrics(
@@ -190,4 +274,5 @@ class FG2431ProfileSensor(SensorEntity):
             impedance_ohm=impedance,
             height_cm=float(self.profile.entry.data[CONF_HEIGHT]),
             is_male=self.profile.entry.data[CONF_SEX] == SEX_MALE,
+            age=int(age) if age is not None else None,
         )

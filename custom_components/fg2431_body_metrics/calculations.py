@@ -11,15 +11,29 @@ class BodyMetrics:
     bmi: float
     body_fat_percentage: float
     body_water_percentage: float
+    fat_free_mass_kg: float
+    skeletal_muscle_mass_kg: float | None
+    skeletal_muscle_percentage: float | None
+    muscle_mass_kg: float
+    muscle_percentage: float
+    bone_mass_kg: float
+    protein_percentage: float
+    basal_metabolic_rate_kcal: float | None
 
 
 def calculate_body_metrics(
-    weight_kg: float, impedance_ohm: float, height_cm: float, is_male: bool
+    weight_kg: float,
+    impedance_ohm: float,
+    height_cm: float,
+    is_male: bool,
+    age: int | None = None,
 ) -> BodyMetrics | None:
-    """Calculate BMI, body fat and body water from a final scale measurement.
+    """Calculate body-composition estimates from a final scale measurement.
 
-    The impedance equations are those published by Sun et al. (2003). Results
-    are estimates for adult trend tracking and are not medical measurements.
+    Fat-free mass and body water use Sun et al. (2003), skeletal muscle uses
+    Janssen et al. (2000), and BMR uses Mifflin-St Jeor (1990). Remaining
+    composition values are transparent derivations from those estimates.
+    Results are intended for adult trend tracking, not medical use.
     """
     values = (weight_kg, impedance_ohm, height_cm)
     if not all(math.isfinite(value) for value in values):
@@ -29,6 +43,8 @@ def calculate_body_metrics(
     if not 100.0 <= height_cm <= 230.0:
         return None
     if not 100.0 <= impedance_ohm <= 1500.0:
+        return None
+    if age is not None and not 18 <= age <= 120:
         return None
 
     height_m = height_cm / 100.0
@@ -60,13 +76,61 @@ def calculate_body_metrics(
     body_water_kg = 0.99513 * body_water_liters
     body_water_percentage = body_water_kg / weight_kg * 100.0
 
+    skeletal_muscle_mass = None
+    skeletal_muscle_percentage = None
+    if age is not None:
+        sex_factor = 1.0 if is_male else 0.0
+        skeletal_muscle_mass = (
+            0.401 * height_squared_over_resistance
+            + 3.825 * sex_factor
+            - 0.071 * age
+            + 5.102
+        )
+        skeletal_muscle_percentage = skeletal_muscle_mass / weight_kg * 100.0
+
+    bone_mass = fat_free_mass * (0.057 if is_male else 0.05)
+    muscle_mass = fat_free_mass - bone_mass
+    muscle_percentage = muscle_mass / weight_kg * 100.0
+    protein_percentage = muscle_percentage - body_water_percentage
+
+    basal_metabolic_rate = None
+    if age is not None:
+        sex_offset = 5.0 if is_male else -161.0
+        basal_metabolic_rate = (
+            10.0 * weight_kg + 6.25 * height_cm - 5.0 * age + sex_offset
+        )
+
     if not 0.0 <= body_fat_percentage <= 75.0:
         return None
     if not 20.0 <= body_water_percentage <= 80.0:
+        return None
+    if skeletal_muscle_mass is not None and not 0.0 < skeletal_muscle_mass < fat_free_mass:
+        return None
+    if not 0.0 <= protein_percentage <= 40.0:
         return None
 
     return BodyMetrics(
         bmi=round(bmi, 1),
         body_fat_percentage=round(body_fat_percentage, 1),
         body_water_percentage=round(body_water_percentage, 1),
+        fat_free_mass_kg=round(fat_free_mass, 1),
+        skeletal_muscle_mass_kg=(
+            round(skeletal_muscle_mass, 1)
+            if skeletal_muscle_mass is not None
+            else None
+        ),
+        skeletal_muscle_percentage=(
+            round(skeletal_muscle_percentage, 1)
+            if skeletal_muscle_percentage is not None
+            else None
+        ),
+        muscle_mass_kg=round(muscle_mass, 1),
+        muscle_percentage=round(muscle_percentage, 1),
+        bone_mass_kg=round(bone_mass, 1),
+        protein_percentage=round(protein_percentage, 1),
+        basal_metabolic_rate_kcal=(
+            round(basal_metabolic_rate)
+            if basal_metabolic_rate is not None
+            else None
+        ),
     )

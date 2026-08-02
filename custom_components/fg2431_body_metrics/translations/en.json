@@ -8,6 +8,7 @@
           "profile_name": "Profile name",
           "sex": "Calculation profile",
           "height": "Height",
+          "age": "Age",
           "weight_entity": "Weight sensor",
           "heart_rate_entity": "Heart-rate sensor",
           "impedance_entity": "Impedance sensor"
@@ -16,6 +17,17 @@
     },
     "abort": {
       "already_configured": "This weight sensor is already assigned to a profile."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Edit calculation profile",
+        "description": "Enter the person's real age. The profile reloads without changing entity IDs or history.",
+        "data": {
+          "age": "Age"
+        }
+      }
     }
   },
   "selector": {
@@ -34,7 +46,15 @@
       "impedance": { "name": "Impedance" },
       "bmi": { "name": "BMI" },
       "body_fat": { "name": "Body fat" },
-      "body_water": { "name": "Body water" }
+      "body_water": { "name": "Body water" },
+      "fat_free_mass": { "name": "Fat-free mass" },
+      "skeletal_muscle_mass": { "name": "Skeletal muscle mass" },
+      "skeletal_muscle": { "name": "Skeletal muscle" },
+      "muscle_mass": { "name": "Muscle mass" },
+      "muscle_percentage": { "name": "Muscle percentage" },
+      "bone_mass": { "name": "Bone mass" },
+      "protein": { "name": "Protein" },
+      "bmr": { "name": "Basal metabolic rate" }
     }
   }
 }

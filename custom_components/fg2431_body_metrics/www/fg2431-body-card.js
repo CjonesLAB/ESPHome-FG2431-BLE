@@ -11,6 +11,14 @@ const FIELD_DEFINITIONS = [
   ["bmi_entity", "BMI", "BMI"],
   ["body_fat_entity", "Körperfett", "Body fat"],
   ["body_water_entity", "Körperwasser", "Body water"],
+  ["fat_free_mass_entity", "Fettfreie Körpermasse", "Fat-free mass"],
+  ["skeletal_muscle_entity", "Skelettmuskelanteil", "Skeletal muscle"],
+  ["skeletal_muscle_mass_entity", "Skelettmuskelmasse", "Skeletal muscle mass"],
+  ["muscle_percentage_entity", "Muskelanteil", "Muscle percentage"],
+  ["muscle_mass_entity", "Muskelmasse", "Muscle mass"],
+  ["bone_mass_entity", "Knochenmasse", "Bone mass"],
+  ["protein_entity", "Proteinanteil", "Protein"],
+  ["bmr_entity", "Grundumsatz", "Basal metabolic rate"],
 ];
 
 const HISTORY_FIELD_DEFINITIONS = [
@@ -19,6 +27,11 @@ const HISTORY_FIELD_DEFINITIONS = [
   ["body_water_entity", "Körperwasser", "Body water"],
   ["bmi_entity", "BMI", "BMI"],
   ["heart_rate_entity", "Puls", "Heart rate"],
+  ["fat_free_mass_entity", "Fettfreie Körpermasse", "Fat-free mass"],
+  ["skeletal_muscle_entity", "Skelettmuskelanteil", "Skeletal muscle"],
+  ["muscle_mass_entity", "Muskelmasse", "Muscle mass"],
+  ["protein_entity", "Proteinanteil", "Protein"],
+  ["bmr_entity", "Grundumsatz", "Basal metabolic rate"],
 ];
 
 const escapeHtml = (value) =>
@@ -62,11 +75,11 @@ class FG2431BodyCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 4;
+    return 8;
   }
 
   getGridOptions() {
-    return { columns: 6, rows: 4, min_columns: 4, min_rows: 3 };
+    return { columns: 6, rows: 8, min_columns: 4, min_rows: 3 };
   }
 
   _isGerman() {
@@ -116,10 +129,10 @@ class FG2431BodyCard extends HTMLElement {
 
   _metric(key, label, icon, accent = "") {
     const entityId = this._config[key];
+    if (!entityId) return "";
     const state = this._formatted(entityId);
-    const disabled = entityId ? "" : " missing";
     return `
-      <button class="metric${disabled}" data-entity="${escapeHtml(entityId)}">
+      <button class="metric" data-entity="${escapeHtml(entityId)}">
         <ha-icon icon="${icon}"></ha-icon>
         <span class="metric-copy">
           <span class="metric-label">${escapeHtml(label)}</span>
@@ -138,6 +151,14 @@ class FG2431BodyCard extends HTMLElement {
           pulse: "Puls",
           fat: "Körperfett",
           water: "Körperwasser",
+          fatFree: "Fettfreie Körpermasse",
+          skeletal: "Skelettmuskelanteil",
+          skeletalMass: "Skelettmuskelmasse",
+          muscle: "Muskelanteil",
+          muscleMass: "Muskelmasse",
+          bone: "Knochenmasse",
+          protein: "Proteinanteil",
+          bmr: "Grundumsatz",
         }
       : {
           empty: "Select the sensors in the visual card editor.",
@@ -145,6 +166,14 @@ class FG2431BodyCard extends HTMLElement {
           pulse: "Heart rate",
           fat: "Body fat",
           water: "Body water",
+          fatFree: "Fat-free mass",
+          skeletal: "Skeletal muscle",
+          skeletalMass: "Skeletal muscle mass",
+          muscle: "Muscle percentage",
+          muscleMass: "Muscle mass",
+          bone: "Bone mass",
+          protein: "Protein",
+          bmr: "Basal metabolic rate",
         };
     const configured = FIELD_DEFINITIONS.some(([key]) => this._config[key]);
     const weightEntity = this._config.weight_entity;
@@ -205,6 +234,14 @@ class FG2431BodyCard extends HTMLElement {
             ${this._metric("body_water_entity", labels.water, "mdi:water-percent", "water")}
             ${this._metric("bmi_entity", "BMI", "mdi:human-male-height-variant")}
             ${this._metric("heart_rate_entity", labels.pulse, "mdi:heart-pulse")}
+            ${this._metric("fat_free_mass_entity", labels.fatFree, "mdi:human")}
+            ${this._metric("skeletal_muscle_entity", labels.skeletal, "mdi:arm-flex-outline")}
+            ${this._metric("skeletal_muscle_mass_entity", labels.skeletalMass, "mdi:arm-flex")}
+            ${this._metric("muscle_percentage_entity", labels.muscle, "mdi:weight-lifter")}
+            ${this._metric("muscle_mass_entity", labels.muscleMass, "mdi:weight-lifter")}
+            ${this._metric("bone_mass_entity", labels.bone, "mdi:bone")}
+            ${this._metric("protein_entity", labels.protein, "mdi:food-drumstick-outline")}
+            ${this._metric("bmr_entity", labels.bmr, "mdi:fire")}
           </div>` : `<div class="empty">${labels.empty}</div>`}
       </ha-card>`;
 
@@ -213,7 +250,6 @@ class FG2431BodyCard extends HTMLElement {
     });
   }
 }
-
 class FG2431BodyCardEditor extends HTMLElement {
   constructor() {
     super();
@@ -259,7 +295,7 @@ class FG2431BodyCardEditor extends HTMLElement {
         ha-textfield, ha-entity-picker { display: block; width: 100%; }
       </style>
       <div class="form">
-        <div class="hint">${de ? "Wähle die sechs Sensoren eines Personenprofils. Für weitere Personen fügst du die Karte erneut hinzu." : "Select the six sensors of one profile. Add the card again for additional people."}</div>
+        <div class="hint">${de ? "Wähle die gewünschten Sensoren eines Personenprofils. Nicht benötigte Felder können leer bleiben." : "Select the desired sensors for one profile. Fields you do not need may remain empty."}</div>
         <ha-textfield id="title"></ha-textfield>
         <div id="pickers"></div>
       </div>`;
@@ -526,7 +562,7 @@ class FG2431HistoryCard extends HTMLElement {
           <div class="chart"><svg viewBox="0 0 680 210" preserveAspectRatio="none" aria-label="${de ? "Gewichtsverlauf" : "Weight history"}"><path d="${weightPath}"></path></svg></div>
           <div class="dates"><span>${startDate}</span><span>${endDate}</span></div>
           <div class="stats"><div class="stat"><span>${labels.average}</span><strong>${this._formatValue(summary.average, weightEntity, 2)}</strong></div><div class="stat"><span>${labels.min}</span><strong>${this._formatValue(summary.min, weightEntity, 2)}</strong></div><div class="stat"><span>${labels.max}</span><strong>${this._formatValue(summary.max, weightEntity, 2)}</strong></div></div>
-          <div class="minis">${this._metricChart("body_fat_entity", de ? "Körperfett" : "Body fat", "#e6a64b")}${this._metricChart("body_water_entity", de ? "Körperwasser" : "Body water", "#27aee4")}${this._metricChart("bmi_entity", "BMI", "#8b7cf6")}${this._metricChart("heart_rate_entity", de ? "Puls" : "Heart rate", "#ef657a")}</div>`}
+          <div class="minis">${this._metricChart("body_fat_entity", de ? "Körperfett" : "Body fat", "#e6a64b")}${this._metricChart("body_water_entity", de ? "Körperwasser" : "Body water", "#27aee4")}${this._metricChart("bmi_entity", "BMI", "#8b7cf6")}${this._metricChart("heart_rate_entity", de ? "Puls" : "Heart rate", "#ef657a")}${this._metricChart("fat_free_mass_entity", de ? "Fettfreie Körpermasse" : "Fat-free mass", "#4fc3a1")}${this._metricChart("skeletal_muscle_entity", de ? "Skelettmuskelanteil" : "Skeletal muscle", "#5dba67")}${this._metricChart("muscle_mass_entity", de ? "Muskelmasse" : "Muscle mass", "#7cb342")}${this._metricChart("protein_entity", de ? "Proteinanteil" : "Protein", "#c0a24d")}${this._metricChart("bmr_entity", de ? "Grundumsatz" : "Basal metabolic rate", "#ef8b4d")}</div>`}
       </ha-card>`;
 
     this.shadowRoot.querySelectorAll("[data-days]").forEach((button) => button.addEventListener("click", () => this._setDays(Number(button.dataset.days))));

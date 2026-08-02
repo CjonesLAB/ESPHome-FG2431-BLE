@@ -4,9 +4,11 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import Platform
+from homeassistant.core import callback
 from homeassistant.helpers import selector
 
 from .const import (
+    CONF_AGE,
     CONF_HEART_RATE_ENTITY,
     CONF_HEIGHT,
     CONF_IMPEDANCE_ENTITY,
@@ -23,6 +25,12 @@ class FG2431BodyMetricsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle an FG2431 body-profile config flow."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Return the options flow used to add or change the real age."""
+        return FG2431BodyMetricsOptionsFlow()
 
     async def async_step_user(self, user_input=None):
         """Create one person profile."""
@@ -56,6 +64,15 @@ class FG2431BodyMetricsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         mode=selector.NumberSelectorMode.BOX,
                     )
                 ),
+                vol.Required(CONF_AGE, default=40): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=18,
+                        max=120,
+                        step=1,
+                        unit_of_measurement="years",
+                        mode=selector.NumberSelectorMode.BOX,
+                    )
+                ),
                 vol.Required(CONF_WEIGHT_ENTITY): sensor_selector,
                 vol.Required(CONF_HEART_RATE_ENTITY): sensor_selector,
                 vol.Required(CONF_IMPEDANCE_ENTITY): sensor_selector,
@@ -63,4 +80,33 @@ class FG2431BodyMetricsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         return self.async_show_form(
             step_id="user", data_schema=data_schema, errors=errors
+        )
+
+class FG2431BodyMetricsOptionsFlow(config_entries.OptionsFlowWithReload):
+    """Allow existing profiles to add or change the real age."""
+
+    async def async_step_init(self, user_input=None):
+        """Manage profile calculation options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current_age = self.config_entry.options.get(
+            CONF_AGE, self.config_entry.data.get(CONF_AGE, 40)
+        )
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_AGE, default=current_age):
+                        selector.NumberSelector(
+                            selector.NumberSelectorConfig(
+                                min=18,
+                                max=120,
+                                step=1,
+                                unit_of_measurement="years",
+                                mode=selector.NumberSelectorMode.BOX,
+                            )
+                        )
+                }
+            ),
         )

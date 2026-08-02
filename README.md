@@ -107,7 +107,13 @@ The optional `FG2431 Body Metrics` helper uses the final ESPHome weight and impe
 
 - BMI;
 - body-fat percentage;
-- body-water percentage.
+- body-water percentage;
+- fat-free mass;
+- skeletal-muscle percentage and mass;
+- muscle percentage and mass;
+- bone mass;
+- protein percentage;
+- basal metabolic rate (BMR).
 
 It also mirrors weight, pulse and impedance into one Home Assistant device per person. Updates are briefly grouped so the values from one final BLE packet appear together.
 
@@ -116,24 +122,28 @@ It also mirrors weight, pulse and impedance into one Home Assistant device per p
 1. In HACS, add `https://github.com/CjonesLAB/ESPHome-FG2431-BLE` as a custom **Integration** repository.
 2. Install `FG2431 BLE for ESPHome and Home Assistant` and restart Home Assistant.
 3. Open **Settings → Devices & services → Add integration → FG2431 Body Metrics**.
-4. Create one profile for each person and select its ESPHome weight, pulse and impedance sensors, height and calculation profile.
+4. Create one profile for each person and select its ESPHome weight, pulse and impedance sensors, height, real age and calculation profile.
+
+After updating an existing profile to version 1.4.0, open the integration entry, choose **Configure**, enter the person's real age and save. Existing entity IDs and recorder history are preserved. Age is used only as a calculation input and is not exposed as an entity.
 
 For manual installation, copy `custom_components/fg2431_body_metrics` into `/config/custom_components/` and restart Home Assistant.
 
 ### Calculations and limitations
 
-The impedance equations are the adult fat-free-mass and total-body-water equations published by [Sun et al. (2003)](https://ajcn.nutrition.org/article/S0002-9165%2823%2905611-3/fulltext), also implemented by the open-source [openScale project](https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/libs/StandardImpedanceLib.kt). This project contains an independent implementation.
+The impedance equations use the adult fat-free-mass and total-body-water equations published by [Sun et al. (2003)](https://ajcn.nutrition.org/article/S0002-9165%2823%2905611-3/fulltext). Skeletal muscle uses [Janssen et al. (2000)](https://pubmed.ncbi.nlm.nih.gov/10926627/) and BMR uses [Mifflin–St Jeor (1990)](https://pubmed.ncbi.nlm.nih.gov/2305711/). The independent implementation follows the same transparent approach used by the open-source [openScale project](https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/libs/StandardImpedanceLib.kt).
+
+Visceral fat, subcutaneous fat, biological age and cardiac index are deliberately not calculated because they cannot be derived reliably from the available packet values with a published, reproducible method.
 
 Bioimpedance values from consumer foot scales are estimates affected by hydration, recent exercise, meals and contact quality. They are intended for consistent personal trend tracking and are not medical measurements, diagnoses or treatment advice.
 
 ## Lovelace card
 
-Version 1.1.0 includes the selectable **FG2431 Body Analysis** card. The integration loads it automatically, so no dashboard resource or raw YAML has to be added manually.
+The integration includes the selectable **FG2431 Body Analysis** card and loads it automatically, so no dashboard resource or raw YAML has to be added manually.
 
 1. Update or re-download the integration in HACS and restart Home Assistant.
 2. Open a dashboard and select **Edit dashboard → Add card**.
 3. Search for `FG2431` and choose the card.
-4. Enter the person's name and select weight, weight change, pulse, BMI, body fat and body water in the visual editor.
+4. Enter the person's name and select the desired profile sensors in the visual editor. The new composition sensors can be shown or left empty individually.
 5. Add another copy of the card for every additional person.
 
 Clicking a displayed metric opens Home Assistant's normal entity details dialog. The card follows the active Home Assistant theme and works in Sections as well as masonry dashboards.
@@ -142,7 +152,7 @@ Impedance remains available as a sensor and calculation input but is not display
 
 ### History card
 
-The additional selectable **FG2431 History** card displays daily long-term statistics for weight, body fat, body water, BMI and heart rate. Select the five sensors of one profile in its visual editor. The period can be switched between 7, 28 and 90 days directly on the card; 28 days is the default. The weight section also shows change, average, minimum and maximum.
+The additional selectable **FG2431 History** card displays daily long-term statistics for weight and any selected body metrics. Besides body fat, body water, BMI and heart rate, version 1.4.0 can plot fat-free mass, skeletal-muscle percentage, muscle mass, protein and BMR. The period can be switched between 7, 28 and 90 days directly on the card; 28 days is the default. The weight section also shows change, average, minimum and maximum.
 
 Home Assistant starts building long-term statistics after installation and subsequent measurements. Older values cannot be reconstructed retroactively.
 
