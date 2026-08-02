@@ -139,6 +139,12 @@ Ab Version 1.1.0 ist die Karte **FG2431 Körperanalyse** enthalten. Die Integrat
 4. Den Namen der Person eintragen und im visuellen Editor Gewicht, Gewichtsänderung, Puls, BMI, Körperfett und Körperwasser auswählen.
 
 Die Impedanz bleibt als Sensor und Berechnungsgrundlage erhalten, wird auf der Karte aber nicht angezeigt. Neben dem Gewicht zeigt die Karte die Änderung zur vorherigen finalen Messung: Abnahme grün, Zunahme rot und unverändert neutral.
+
+### Verlaufskarte
+
+Die zusätzlich auswählbare Karte **FG2431 Verlauf** zeigt tägliche Langzeitstatistiken für Gewicht, Körperfett, Körperwasser, BMI und Puls. Im visuellen Editor werden die fünf Sensoren eines Profils ausgewählt. Der Zeitraum lässt sich direkt auf der Karte zwischen 7, 28 und 90 Tagen umschalten; standardmäßig werden 28 Tage angezeigt. Für das Gewicht erscheinen außerdem Veränderung, Durchschnitt, Minimum und Maximum.
+
+Home Assistant baut Langzeitstatistiken erst ab der Installation und den folgenden Messungen auf. Frühere Werte können nicht rückwirkend ergänzt werden.
 5. Für jede weitere Person eine weitere Instanz der Karte hinzufügen.
 
 Ein Klick auf einen Messwert öffnet den normalen Home-Assistant-Detaildialog des Sensors. Die Karte übernimmt das aktive Home-Assistant-Theme und funktioniert sowohl in Sections- als auch in Masonry-Dashboards.
