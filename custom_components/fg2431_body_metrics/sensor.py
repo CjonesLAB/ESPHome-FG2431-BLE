@@ -40,6 +40,7 @@ class FG2431SensorDescription(SensorEntityDescription):
 
     source_key: str | None = None
     metric_getter: Callable[[BodyMetrics], float] | None = None
+    profile_getter: Callable[[FG2431ProfileData], float | None] | None = None
 
 
 SENSOR_DESCRIPTIONS = (
@@ -60,6 +61,15 @@ SENSOR_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
         icon="mdi:heart-pulse",
+    ),
+    FG2431SensorDescription(
+        key="weight_change",
+        translation_key="weight_change",
+        profile_getter=lambda profile: profile.weight_change_kg,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        icon="mdi:swap-vertical-bold",
     ),
     FG2431SensorDescription(
         key="impedance",
@@ -145,6 +155,8 @@ class FG2431ProfileSensor(SensorEntity):
         """Return whether the required source values are available."""
         if self.entity_description.source_key is not None:
             return self._source_value(self.entity_description.source_key) is not None
+        if self.entity_description.profile_getter is not None:
+            return self.entity_description.profile_getter(self.profile) is not None
         return self._calculated_metrics() is not None
 
     @property
@@ -152,6 +164,8 @@ class FG2431ProfileSensor(SensorEntity):
         """Return the current source or calculated value."""
         if self.entity_description.source_key is not None:
             return self._source_value(self.entity_description.source_key)
+        if self.entity_description.profile_getter is not None:
+            return self.entity_description.profile_getter(self.profile)
         metrics = self._calculated_metrics()
         if metrics is None or self.entity_description.metric_getter is None:
             return None
