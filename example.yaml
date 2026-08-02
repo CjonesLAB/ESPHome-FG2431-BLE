@@ -1,0 +1,53 @@
+substitutions:
+  # Replace this placeholder with the MAC address of your own scale.
+  scale_mac: "AA:BB:CC:DD:EE:FF"
+
+esphome:
+  name: fg2431-scale
+  friendly_name: FG2431 Scale
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+api:
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+external_components:
+  - source: github://CjonesLAB/ESPHome-FG2431-BLE@main
+    components: [fg2431_ble]
+
+esp32_ble_tracker:
+
+ble_client:
+  - mac_address: ${scale_mac}
+    id: fg2431_scale_client
+    auto_connect: true
+
+sensor:
+  - platform: fg2431_ble
+    ble_client_id: fg2431_scale_client
+    persons:
+      - min_weight: 65.0
+        max_weight: 85.0
+        weight:
+          name: "Person 1 Weight"
+        heart_rate:
+          name: "Person 1 Heart Rate"
+        impedance:
+          name: "Person 1 Impedance"
+      - min_weight: 45.0
+        max_weight: 64.9
+        weight:
+          name: "Person 2 Weight"
+        heart_rate:
+          name: "Person 2 Heart Rate"
+        impedance:
+          name: "Person 2 Impedance"
